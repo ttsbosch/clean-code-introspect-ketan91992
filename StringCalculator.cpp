@@ -49,26 +49,31 @@ std::string StringCalculator::parseCustomDelimiter(const std::string& delimiterS
  }
 
 int StringCalculator::sum(const std::vector<std::string>& numbers) {
-        int total = 0;
-        std::vector<int> negatives;
-        
-        for (const std::string& numStr : numbers) {
-            if (!numStr.empty()) {
-                int num = std::stoi(numStr);
-                if (num < 0) {
-                    negatives.push_back(num);
-                } else if (num <= 1000) {
-                    total += num;
-                }
-            }
-        }
-        
-        if (!negatives.empty()) {
-            throwNegativeException(negatives);
-        }
-        
-        return total;
+   int total = 0;
+   std::vector<int> negatives;
+
+   for (const std::string& numStr : numbers) {
+      int num = parseNumber(numStr, negatives);
+      if (num <= 1000) {
+          total += num;
+      }
+   }
+
+   if (!negatives.empty()) {
+      throwNegativeException(negatives);
+   }
+
+   return total;
 }
+
+ int StringCalculator::parseNumber(const std::string& numStr, std::vector<int>& negatives) {
+     if (numStr.empty()) return 0;
+     int num = std::stoi(numStr);
+     if (num < 0) {
+         negatives.push_back(num);
+     }
+     return num;
+ }
 
  void StringCalculator::throwNegativeException(const std::vector<int>& negatives) {
      std::stringstream ss;
