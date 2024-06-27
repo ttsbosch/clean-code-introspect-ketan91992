@@ -1,5 +1,12 @@
 #include<iostream>
 #include<string>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <stdexcept>
+#include <regex>
+#include <algorithm>
 
 using namespace std;
 class StringCalculator{
