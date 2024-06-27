@@ -7,7 +7,7 @@
 #include <regex>
 #include <algorithm>
 
-int StringCalculator::add(string input){
+int StringCalculator::add(string input) {
         if (input.empty()) return 0;
 
         std::string delimiter = ",";
@@ -27,3 +27,47 @@ int StringCalculator::add(string input){
         std::vector<std::string> tokens = split(numString, delimiter);
         return sum(tokens);
 }
+
+ std::vector<std::string> StringCalculator::split(const std::string& str, const std::string& delimiter) {
+        std::vector<std::string> tokens;
+        size_t start = 0;
+        size_t end = str.find(delimiter);
+
+        while (end != std::string::npos) {
+            tokens.push_back(str.substr(start, end - start));
+            start = end + delimiter.length();
+            end = str.find(delimiter, start);
+        }
+        tokens.push_back(str.substr(start));
+        return tokens;
+    }
+
+    int StringCalculator::sum(const std::vector<std::string>& numbers) {
+        int total = 0;
+        std::vector<int> negatives;
+
+        for (const std::string& numStr : numbers) {
+            if (!numStr.empty()) {
+                int num = std::stoi(numStr);
+                if (num < 0) {
+                    negatives.push_back(num);
+                } else if (num <= 1000) {
+                    total += num;
+                }
+            }
+        }
+
+        if (!negatives.empty()) {
+            std::stringstream ss;
+            ss << "negatives not allowed: ";
+            for (size_t i = 0; i < negatives.size(); ++i) {
+                ss << negatives[i];
+                if (i != negatives.size() - 1) {
+                    ss << ", ";
+                }
+            }
+            throw std::runtime_error(ss.str());
+        }
+
+        return total;
+    }
