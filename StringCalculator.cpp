@@ -1,4 +1,11 @@
 #include "StringCalculator.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <stdexcept>
+#include <regex>
+#include <algorithm>
 
 int StringCalculator::add(string input){
         if (input.empty()) return 0;
