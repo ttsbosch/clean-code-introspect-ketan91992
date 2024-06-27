@@ -7,45 +7,51 @@
 #include <regex>
 #include <algorithm>
 
-int StringCalculator::add(string input) {
-        if (input.empty()) return 0;
+int StringCalculator::add(string numbers) {
+        if (numbers.empty()) return 0;
 
         std::string delimiter = ",";
-        std::string numString = input;
+        std::string numString = numbers;
 
         // Handle custom delimiter
-        if (input.substr(0, 2) == "//") {
-            size_t newlinePos = input.find("\n");
-            delimiter = input.substr(2, newlinePos - 2);
-            numString = input.substr(newlinePos + 1);
+        if (numbers.substr(0, 2) == "//") {
+            size_t newlinePos = numbers.find("\n");
+            delimiter = parseCustomDelimiter(numbers.substr(2, newlinePos - 2));
+            numString = numbers.substr(newlinePos + 1);
         }
 
-        // Replace newlines with the delimiter
+        // Replace newlines with delimiter
         std::replace(numString.begin(), numString.end(), '\n', delimiter[0]);
 
-        // Split the numbers by the delimiter
-        std::vector<std::string> tokens = split(numString, delimiter);
-        return sum(tokens);
+        // Split numbers and sum them
+        return sum(split(numString, delimiter));
 }
 
- std::vector<std::string> StringCalculator::split(const std::string& str, const std::string& delimiter) {
-        std::vector<std::string> tokens;
-        size_t start = 0;
-        size_t end = str.find(delimiter);
-
-        while (end != std::string::npos) {
-            tokens.push_back(str.substr(start, end - start));
-            start = end + delimiter.length();
-            end = str.find(delimiter, start);
+std::string StringCalculator::parseCustomDelimiter(const std::string& delimiterSection) {
+        if (delimiterSection[0] == '[' && delimiterSection.back() == ']') {
+            return delimiterSection.substr(1, delimiterSection.length() - 2);
         }
-        tokens.push_back(str.substr(start));
-        return tokens;
-    }
+        return delimiterSection;
+} 
 
-    int StringCalculator::sum(const std::vector<std::string>& numbers) {
+ std::vector<std::string> StringCalculator::split(const std::string& str, const std::string& delimiter) {
+     std::vector<std::string> tokens;
+     size_t start = 0;
+     size_t end = str.find(delimiter);
+
+     while (end != std::string::npos) {
+         tokens.push_back(str.substr(start, end - start));
+         start = end + delimiter.length();
+         end = str.find(delimiter, start);
+     }
+     tokens.push_back(str.substr(start));
+     return tokens;
+ }
+
+int StringCalculator::sum(const std::vector<std::string>& numbers) {
         int total = 0;
         std::vector<int> negatives;
-
+        
         for (const std::string& numStr : numbers) {
             if (!numStr.empty()) {
                 int num = std::stoi(numStr);
@@ -56,18 +62,22 @@ int StringCalculator::add(string input) {
                 }
             }
         }
-
+        
         if (!negatives.empty()) {
-            std::stringstream ss;
-            ss << "negatives not allowed: ";
-            for (size_t i = 0; i < negatives.size(); ++i) {
-                ss << negatives[i];
-                if (i != negatives.size() - 1) {
-                    ss << ", ";
-                }
-            }
-            throw std::runtime_error(ss.str());
+            throwNegativeException(negatives);
         }
-
+        
         return total;
-    }
+}
+
+ void StringCalculator::throwNegativeException(const std::vector<int>& negatives) {
+     std::stringstream ss;
+     ss << "negatives not allowed: ";
+     for (size_t i = 0; i < negatives.size(); ++i) {
+         ss << negatives[i];
+         if (i != negatives.size() - 1) {
+             ss << ", ";
+         }
+     }
+     throw std::runtime_error(ss.str());
+ }
